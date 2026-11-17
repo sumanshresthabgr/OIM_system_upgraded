@@ -9,14 +9,26 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $invitation_id = (int)$_GET['id'];
 
-// Restructured event query to pull smoothly by Invitation ID parameter
-$stmt_event = $pdo->prepare("SELECT * FROM invitations WHERE id = :id");
-$stmt_event->execute(['id' => $invitation_id]);
-$event = $stmt_event->fetch();
+// SECURE INVITATION OWNERSHIP CHECK
+$stmt_event = $pdo->prepare("
+    SELECT *
+    FROM invitations
+    WHERE id = :id AND admin_id = :admin_id
+");
 
+$stmt_event->execute([
+    'id' => $invitation_id,
+    'admin_id' => $admin_id
+]);
+
+$event = $stmt_event->fetch(PDO::FETCH_ASSOC);
+
+// Prevent unauthorized access
 if (!$event) {
-    die("Access Interception Wall triggered: Unauthorized access array.");
+    http_response_code(403);
+    exit("Access denied. You cannot access this invitation.");
 }
+
 
 // Get the current filename dynamically so it never throws a 404 on submission
 $current_page = basename(__FILE__);
