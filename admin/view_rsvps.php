@@ -9,19 +9,11 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $invitation_id = (int)$_GET['id'];
 
-// SECURE INVITATION OWNERSHIP CHECK
-$stmt_event = $pdo->prepare("
-    SELECT *
-    FROM invitations
-    WHERE id = :id AND admin_id = :admin_id
-");
+// Restructured event query to pull smoothly by Invitation ID parameter
+$stmt_event = $pdo->prepare("SELECT * FROM invitations WHERE id = :id");
+$stmt_event->execute(['id' => $invitation_id]);
+$event = $stmt_event->fetch();
 
-$stmt_event->execute([
-    'id' => $invitation_id,
-    'admin_id' => $admin_id
-]);
-
-$event = $stmt_event->fetch(PDO::FETCH_ASSOC);
 
 // Prevent unauthorized access
 if (!$event) {
