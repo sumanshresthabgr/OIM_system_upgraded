@@ -1,4 +1,3 @@
-
 <?php
 require_once '../config/database.php';
 session_start();
@@ -6,61 +5,114 @@ session_start();
 $error = '';
 $success = '';
 
+$questions = [
+    'What is your favourite food?',
+    'What is your favourite movie?',
+    'What is your favourite game?',
+    'What was your first crush name?',
+    'What is your hobby?'
+];
+
+function normalizeSecurityAnswer(string $answer): string {
+    $answer = trim($answer);
+    $answer = preg_replace('/\s+/', ' ', $answer);
+    return mb_strtolower($answer, 'UTF-8');
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $username = trim($_POST['username'] ?? '');
-    $password = trim($_POST['password'] ?? '');
-    $confirm_password = trim($_POST['confirm_password'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
+    $answers = $_POST['security_answers'] ?? [];
 
-    if (!empty($username) && !empty($password) && !empty($confirm_password)) {
+    if (!is_array($answers)) {
+        $answers = [];
+    }
 
-        if ($password !== $confirm_password) {
+    $cleanAnswers = [];
 
-            $error = 'Passwords do not match.';
+    foreach ($questions as $i => $question) {
+        $cleanAnswers[$i] = normalizeSecurityAnswer(
+            (string)($answers[$i] ?? '')
+        );
+    }
 
-        } elseif (strlen($password) < 6) {
+    if ($username === '' || $password === '' || $confirm_password === '') {
+        $error = 'Please fill out all required fields.';
 
-            $error = 'Password must be at least 6 characters long.';
+    } elseif (strlen($password) < 6) {
+        $error = 'Password must be at least 6 characters long.';
 
-        } else {
+    } elseif ($password !== $confirm_password) {
+        $error = 'Passwords do not match.';
 
-            // Check whether username already exists
+    } elseif (in_array('', $cleanAnswers, true)) {
+        $error = 'Please answer all five security questions.';
+
+    } else {
+        try {
             $stmt = $pdo->prepare(
-                "SELECT id FROM admins WHERE username = :username"
+                'SELECT id FROM admins WHERE username = :username'
             );
 
             $stmt->execute(['username' => $username]);
 
             if ($stmt->fetch()) {
-
-                $error = 'Username is already registered. Please select another.';
+                $error = 'Username already exists. Please choose another username.';
 
             } else {
+                $answerHashes = [];
 
-                // Hash password securely
-                $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+                foreach ($cleanAnswers as $answer) {
+                    $answerHashes[] = password_hash(
+                        $answer,
+                        PASSWORD_DEFAULT
+                    );
+                }
 
-                // ALWAYS create a normal user account
-                // Users cannot select or submit their own role
                 $insert = $pdo->prepare(
-                    "INSERT INTO admins (username, password, role)
-                     VALUES (:username, :password, 'user')"
+                    "INSERT INTO admins
+                    (
+                        username,
+                        password,
+                        role,
+                        security_answer_1,
+                        security_answer_2,
+                        security_answer_3,
+                        security_answer_4,
+                        security_answer_5
+                    )
+                    VALUES
+                    (
+                        :username,
+                        :password,
+                        'user',
+                        :a1,
+                        :a2,
+                        :a3,
+                        :a4,
+                        :a5
+                    )"
                 );
 
                 $insert->execute([
                     'username' => $username,
-                    'password' => $hashed_password
+                    'password' => password_hash($password, PASSWORD_DEFAULT),
+                    'a1' => $answerHashes[0],
+                    'a2' => $answerHashes[1],
+                    'a3' => $answerHashes[2],
+                    'a4' => $answerHashes[3],
+                    'a5' => $answerHashes[4]
                 ]);
 
-                $success = 'Account created successfully! Redirecting to login...';
-
-                header("Refresh: 2; URL=login.php");
+                $success = 'Account created successfully! You can now log in.';
             }
+
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            $error = 'Account creation failed due to a database error. Please try again.';
         }
-
-    } else {
-
-        $error = 'Please fill out all required fields.';
     }
 }
 
@@ -78,15 +130,23 @@ include '../includes/header.php';
 
             <?php if ($error): ?>
                 <div class="alert alert-danger">
-                    <?= htmlspecialchars($error) ?>
+                    <strong>Registration Failed!</strong><br>
+                    <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?>
                 </div>
             <?php endif; ?>
 
             <?php if ($success): ?>
                 <div class="alert alert-success">
-                    <?= htmlspecialchars($success) ?>
+                    <strong>Registration Successful!</strong><br>
+                    <?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?>
+                    <br><br>
+                    <a href="login.php" class="btn btn-success">
+                        Go to Login
+                    </a>
                 </div>
             <?php endif; ?>
+
+            <?php if (!$success): ?>
 
             <form action="register.php" method="POST">
 
@@ -96,8 +156,8 @@ include '../includes/header.php';
                         type="text"
                         name="username"
                         class="form-control"
-                        placeholder="e.g., organizer2026"
                         required
+                        maxlength="50"
                         autocomplete="username"
                     >
                 </div>
@@ -120,30 +180,58 @@ include '../includes/header.php';
                         type="password"
                         name="confirm_password"
                         class="form-control"
-                        placeholder="Repeat password"
                         required
                         autocomplete="new-password"
                     >
                 </div>
 
+                <hr>
+
+                <h4>Security Questions</h4>
+
+                <p style="color:#64748b;">
+                    Remember your answers. You will need all five to recover your password.
+                </p>
+
+                <?php foreach ($questions as $i => $question): ?>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <?= ($i + 1) . '. ' . htmlspecialchars($question, ENT_QUOTES, 'UTF-8') ?>
+                        </label>
+
+                        <input
+                            type="text"
+                            name="security_answers[<?= $i ?>]"
+                            class="form-control"
+                            required
+                            maxlength="200"
+                            autocomplete="off"
+                        >
+                    </div>
+
+                <?php endforeach; ?>
+
                 <button
                     type="submit"
                     class="btn btn-success"
-                    style="width: 100%; padding: 12px; font-weight:700;"
+                    style="width:100%; padding:12px; font-weight:700;"
                 >
                     Sign Up
                 </button>
 
             </form>
 
-            <div style="margin-top: 20px; text-align: center; font-size: 0.9rem;">
+            <?php endif; ?>
+
+            <div style="margin-top:20px; text-align:center; font-size:0.9rem;">
                 <span style="color:#64748b;">
                     Already have an account?
                 </span>
 
                 <a
                     href="login.php"
-                    style="color: #2563eb; font-weight:600; text-decoration:none;"
+                    style="color:#2563eb; font-weight:600; text-decoration:none;"
                 >
                     Log In Here
                 </a>

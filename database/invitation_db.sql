@@ -40,3 +40,15 @@ CREATE TABLE IF NOT EXISTS `rsvps` (
 INSERT INTO `admins` (`id`, `username`, `password`, `role`) 
 VALUES (1, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'superadmin')
 ON DUPLICATE KEY UPDATE `role` = 'superadmin';
+
+
+USE invitation_db;
+
+ALTER TABLE admins
+ADD COLUMN security_answer_1 VARCHAR(255) NULL,
+ADD COLUMN security_answer_2 VARCHAR(255) NULL,
+ADD COLUMN security_answer_3 VARCHAR(255) NULL,
+ADD COLUMN security_answer_4 VARCHAR(255) NULL,
+ADD COLUMN security_answer_5 VARCHAR(255) NULL,
+ADD COLUMN recovery_attempts TINYINT UNSIGNED NOT NULL DEFAULT 0,
+ADD COLUMN recovery_locked_until DATETIME NULL;

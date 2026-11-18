@@ -3,15 +3,13 @@
 require_once '../config/database.php';
 session_start();
 
-// 1. If already logged in, redirect according to role
+// Redirect if already logged in
 if (isset($_SESSION['admin_id'])) {
-
     if (($_SESSION['role'] ?? '') === 'superadmin') {
         header("Location: super_admin_dashboard.php");
     } else {
         header("Location: dashboard.php");
     }
-
     exit();
 }
 
@@ -22,9 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = trim($_POST['password'] ?? '');
 
-    if (!empty($username) && !empty($password)) {
+    if ($username !== '' && $password !== '') {
 
-        // 2. Fetch the role along with account information
         $stmt = $pdo->prepare(
             "SELECT id, username, password, role
              FROM admins
@@ -34,25 +31,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute(['username' => $username]);
         $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // 3. Verify password
         if ($admin && password_verify($password, $admin['password'])) {
 
-            // 4. Check exact username capitalization
             if ($admin['username'] !== $username) {
-
-                $error = 'Invalid credentials. Please verify your username and password again.';
-
+                $error = 'Invalid username or password.';
             } else {
 
-                // 5. Regenerate session ID
                 session_regenerate_id(true);
 
-                // 6. Store session information
                 $_SESSION['admin_id'] = $admin['id'];
                 $_SESSION['username'] = $admin['username'];
                 $_SESSION['role'] = $admin['role'];
 
-                // 7. Redirect according to role
                 if ($admin['role'] === 'superadmin') {
                     header("Location: super_admin_dashboard.php");
                 } else {
@@ -63,12 +53,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
         } else {
-
-            $error = 'Invalid credentials. Please verify your username and password again.';
+            $error = 'Invalid username or password.';
         }
 
     } else {
-
         $error = 'Please fill out all details.';
     }
 }
@@ -78,6 +66,7 @@ include '../includes/header.php';
 
 <div class="grid-center">
     <div class="card auth-grid-width">
+
         <div class="card-header">
             <h3>Login to OIMS Engine</h3>
         </div>
@@ -94,6 +83,7 @@ include '../includes/header.php';
 
                 <div class="form-group">
                     <label class="form-label">Username</label>
+
                     <input
                         type="text"
                         name="username"
@@ -105,6 +95,7 @@ include '../includes/header.php';
 
                 <div class="form-group">
                     <label class="form-label">Password</label>
+
                     <input
                         type="password"
                         name="password"
@@ -117,21 +108,36 @@ include '../includes/header.php';
                 <button
                     type="submit"
                     class="btn btn-primary"
-                    style="width: 100%; padding: 12px; font-weight:700;"
+                    style="width:100%; padding:12px; font-weight:700;"
                 >
                     Login
                 </button>
 
             </form>
 
-            <div style="margin-top: 20px; text-align: center; font-size: 0.9rem;">
-                <span style="color:#64748b;">New event planner?</span>
+            <!-- Forgot Password Link -->
+            <div style="margin-top:15px; text-align:center;">
+                <a
+                    href="forgot_password.php"
+                    style="color:#2563eb; font-weight:600; text-decoration:none;"
+                >
+                    Forgot Password?
+                </a>
+            </div>
+
+            <div style="margin-top:20px; text-align:center; font-size:0.9rem;">
+
+                <span style="color:#64748b;">
+                    New event planner?
+                </span>
+
                 <a
                     href="register.php"
-                    style="color: #16a34a; font-weight:600; text-decoration:none;"
+                    style="color:#16a34a; font-weight:600; text-decoration:none;"
                 >
                     Create New User Account
                 </a>
+
             </div>
 
         </div>
