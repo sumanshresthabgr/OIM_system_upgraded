@@ -5,7 +5,8 @@ USE `invitation_db`;
 CREATE TABLE IF NOT EXISTS `admins` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `username` VARCHAR(50) NOT NULL UNIQUE,
-  `password` VARCHAR(255) NOT NULL
+  `password` VARCHAR(255) NOT NULL,
+  `role` ENUM('user', 'superadmin') NOT NULL DEFAULT 'user'
 ) ENGINE=InnoDB;
 
 -- Table 2: invitations
@@ -17,6 +18,9 @@ CREATE TABLE IF NOT EXISTS `invitations` (
   `venue` TEXT NOT NULL,
   `description` TEXT DEFAULT NULL,
   `theme` VARCHAR(30) NOT NULL,
+  `dress_code` VARCHAR(100) DEFAULT NULL,
+  `registry` VARCHAR(255) DEFAULT NULL,
+  `special_notes` TEXT DEFAULT NULL,
   `share_token` VARCHAR(8) NOT NULL UNIQUE,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`admin_id`) REFERENCES `admins`(`id`) ON DELETE CASCADE
@@ -32,8 +36,7 @@ CREATE TABLE IF NOT EXISTS `rsvps` (
   FOREIGN KEY (`invitation_id`) REFERENCES `invitations`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- Insert default admin account (Username: admin | Password: password123)
--- Password hashed using PHP's password_hash() equivalent
-INSERT INTO `admins` (`id`, `username`, `password`) 
-VALUES (1, 'admin', '$2y$10$w6e7pZ94G0b61K4lO8EeeunZ6D1q5e0f7n8p9o0m1l2k3j4i5h6g7')
-ON DUPLICATE KEY UPDATE `id`=`id`;
+-- Default Super Admin (Username: admin | Password: password)
+INSERT INTO `admins` (`id`, `username`, `password`, `role`) 
+VALUES (1, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'superadmin')
+ON DUPLICATE KEY UPDATE `role` = 'superadmin';

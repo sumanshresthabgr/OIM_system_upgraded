@@ -7,7 +7,7 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
     exit();
 }
 
-$invitation_id = (int)$_GET['id'];
+$invitation_id = (int) $_GET['id'];
 
 // Restructured event query to pull smoothly by Invitation ID parameter
 $stmt_event = $pdo->prepare("SELECT * FROM invitations WHERE id = :id");
@@ -25,15 +25,15 @@ $current_page = basename(__FILE__);
 
 // Secure Deletion processing router logic
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_rsvp_id'])) {
-    $delete_rsvp_id = (int)$_POST['delete_rsvp_id'];
-    
+    $delete_rsvp_id = (int) $_POST['delete_rsvp_id'];
+
     // Verify the target entry strictly belongs to this valid controlled invitation reference link
     $stmt_del = $pdo->prepare("DELETE FROM rsvps WHERE id = :id AND invitation_id = :invitation_id");
     $stmt_del->execute([
         'id' => $delete_rsvp_id,
         'invitation_id' => $invitation_id
     ]);
-    
+
     header("Location: " . $current_page . "?id=" . $invitation_id);
     exit();
 }
@@ -70,14 +70,15 @@ include '../includes/header.php';
         font-weight: 600;
         transition: background 0.2s ease;
     }
+
     .ledger-action-btn:hover {
         background: #dc2626;
     }
-    
+
     .ledger-flex-container {
-        display: flex; 
-        gap: 15px; 
-        margin-top: 15px; 
+        display: flex;
+        gap: 15px;
+        margin-top: 15px;
         font-family: 'Montserrat', sans-serif;
     }
 
@@ -86,13 +87,20 @@ include '../includes/header.php';
             flex-direction: column;
             gap: 10px;
         }
+
         .dashboard-table thead {
-            display: none; /* Hide standard head blocks on small viewports */
+            display: none;
+            /* Hide standard head blocks on small viewports */
         }
-        .dashboard-table, .dashboard-table tbody, .dashboard-table tr, .dashboard-table td {
+
+        .dashboard-table,
+        .dashboard-table tbody,
+        .dashboard-table tr,
+        .dashboard-table td {
             display: block;
             width: 100%;
         }
+
         .dashboard-table tr {
             margin-bottom: 15px;
             border: 1px solid #e2e8f0;
@@ -101,6 +109,7 @@ include '../includes/header.php';
             background: #ffffff;
             box-sizing: border-box;
         }
+
         .dashboard-table td {
             text-align: right !important;
             padding-left: 50% !important;
@@ -109,6 +118,7 @@ include '../includes/header.php';
             box-sizing: border-box;
             min-height: 35px;
         }
+
         .dashboard-table td::before {
             content: attr(data-label);
             position: absolute;
@@ -122,14 +132,19 @@ include '../includes/header.php';
 </style>
 
 <div style="margin-bottom: 25px;">
-    <a href="dashboard.php" class="btn btn-outline" style="padding: 6px 12px; margin-bottom: 15px; display: inline-block; text-decoration: none;">&larr; Back to Console</a>
-    <h2 style="word-wrap: break-word; overflow-wrap: break-word;">Interactive Guest Ledger: <span style="color: #2563eb;"><?= htmlspecialchars($event['title']) ?></span></h2>
-    
+    <a href="dashboard.php" class="btn btn-outline"
+        style="padding: 6px 12px; margin-bottom: 15px; display: inline-block; text-decoration: none;">&larr; Back to
+        Console</a>
+    <h2 style="word-wrap: break-word; overflow-wrap: break-word;">Interactive Guest Ledger: <span
+            style="color: #2563eb;"><?= htmlspecialchars($event['title']) ?></span></h2>
+
     <div class="ledger-flex-container">
-        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; text-align: center;">
+        <div
+            style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; text-align: center;">
             Attending: <span style="font-weight: 700; font-size: 1rem;"><?= $count_attending ?></span>
         </div>
-        <div style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; text-align: center;">
+        <div
+            style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; text-align: center;">
             Declined: <span style="font-weight: 700; font-size: 1rem;"><?= $count_declined ?></span>
         </div>
     </div>
@@ -149,27 +164,36 @@ include '../includes/header.php';
             </thead>
             <tbody>
                 <?php if (empty($rsvps)): ?>
-                    <tr><td colspan="5" style="text-align: center; color: #64748b;">No transaction entries recorded.</td></tr>
-                <?php else: $sn = 1; foreach ($rsvps as $rsvp): ?>
-                <tr>
-                    <td data-label="S.N." style="font-weight: 700;"><?= $sn++ ?></td>
-                    <td data-label="Guest Nominal Trace" style="word-break: break-all;"><?= htmlspecialchars($rsvp['guest_name']) ?></td>
-                    <td data-label="Dual-State Feedback">
-                        <?php if ($rsvp['status'] === 'Attending'): ?>
-                            <span class="badge badge-success">Attending ✓</span>
-                        <?php else: ?>
-                            <span class="badge badge-danger">Declined ✗</span>
-                        <?php endif; ?>
-                    </td>
-                    <td data-label="Timestamp"><span style="font-size:0.85rem; color:#64748b;"><?= htmlspecialchars($rsvp['submitted_at']) ?></span></td>
-                    <td data-label="Actions" style="text-align: center;">
-                        <form action="<?= htmlspecialchars($current_page) ?>?id=<?= $invitation_id ?>" method="POST" onsubmit="return confirm('Are you sure you want to completely drop this guest transaction record?');" style="display: inline-block; margin: 0;">
-                            <input type="hidden" name="delete_rsvp_id" value="<?= $rsvp['id'] ?>">
-                            <button type="submit" class="ledger-action-btn">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-                <?php endforeach; endif; ?>
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #64748b;">No transaction entries recorded.</td>
+                    </tr>
+                <?php else:
+                    $sn = 1;
+                    foreach ($rsvps as $rsvp): ?>
+                        <tr>
+                            <td data-label="S.N." style="font-weight: 700;"><?= $sn++ ?></td>
+                            <td data-label="Guest Nominal Trace" style="word-break: break-all;">
+                                <?= htmlspecialchars($rsvp['guest_name']) ?></td>
+                            <td data-label="Dual-State Feedback">
+                                <?php if ($rsvp['status'] === 'Attending'): ?>
+                                    <span class="badge badge-success">Attending ✓</span>
+                                <?php else: ?>
+                                    <span class="badge badge-danger">Declined ✗</span>
+                                <?php endif; ?>
+                            </td>
+                            <td data-label="Timestamp"><span
+                                    style="font-size:0.85rem; color:#64748b;"><?= htmlspecialchars($rsvp['submitted_at']) ?></span>
+                            </td>
+                            <td data-label="Actions" style="text-align: center;">
+                                <form action="<?= htmlspecialchars($current_page) ?>?id=<?= $invitation_id ?>" method="POST"
+                                    onsubmit="return confirm('Are you sure you want to completely drop this guest transaction record?');"
+                                    style="display: inline-block; margin: 0;">
+                                    <input type="hidden" name="delete_rsvp_id" value="<?= $rsvp['id'] ?>">
+                                    <button type="submit" class="ledger-action-btn">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; endif; ?>
             </tbody>
         </table>
     </div>
