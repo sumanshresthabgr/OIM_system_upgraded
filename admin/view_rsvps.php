@@ -13,8 +13,6 @@ $invitation_id = (int)$_GET['id'];
 $stmt_event = $pdo->prepare("SELECT * FROM invitations WHERE id = :id");
 $stmt_event->execute(['id' => $invitation_id]);
 $event = $stmt_event->fetch();
-
-
 // Prevent unauthorized access
 if (!$event) {
     http_response_code(403);
