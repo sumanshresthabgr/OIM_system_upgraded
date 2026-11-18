@@ -16,17 +16,23 @@ include '../includes/header.php';
     .input-copy-group {
         display: flex;
         width: 100%;
-        min-width: 280px; /* Makes the link section significantly bigger */
+        min-width: 280px;
     }
     .input-copy-group input {
         flex-grow: 1;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
     }
-    .input-copy-group button {
+    .input-copy-group button.copy-btn {
+        border-radius: 0;
+        border-left: 0;
+    }
+    .input-copy-group button.qr-btn {
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
         border-left: 0;
+        background-color: #19191a;
+        color: #ffffff;
     }
     .action-cell {
         white-space: nowrap; 
@@ -34,6 +40,43 @@ include '../includes/header.php';
         gap: 6px; 
         justify-content: flex-start; 
         align-items: center;
+    }
+
+    /* QR Modal Styles */
+    .qr-modal-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.6);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+    .qr-modal-backdrop.active {
+        display: flex;
+    }
+    .qr-modal-box {
+        background: #ffffff;
+        border-radius: 12px;
+        max-width: 360px;
+        width: 100%;
+        padding: 24px;
+        text-align: center;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+    }
+    #qrCanvasContainer {
+        display: inline-block;
+        padding: 12px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        margin: 16px 0;
+    }
+    #qrCanvasContainer img,
+    #qrCanvasContainer canvas {
+        display: block;
+        margin: 0 auto;
     }
     
     /* Mobile Alignment and Transformation Fixes */
@@ -43,15 +86,20 @@ include '../includes/header.php';
             align-items: flex-start !important;
             gap: 10px !important;
         }
-        .dashboard-header a {
+        .dashboard-header-actions {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .dashboard-header-actions a {
             width: 100%;
             text-align: center;
         }
         .input-copy-group {
-            min-width: 100%; /* Adapts perfectly to phone widths */
+            min-width: 100%;
         }
         
-        /* Force table to look like stacked cards instead of scrolling wide */
         table.dashboard-table, 
         table.dashboard-table thead, 
         table.dashboard-table tbody, 
@@ -61,7 +109,6 @@ include '../includes/header.php';
             display: block; 
         }
         
-        /* Hide table headers on phone */
         table.dashboard-table thead tr { 
             position: absolute;
             top: -9999px;
@@ -85,15 +132,14 @@ include '../includes/header.php';
             box-sizing: border-box;
         }
         
-        /* Add labels before data injections on mobile */
         table.dashboard-table td:nth-of-type(1):before { content: "Event: "; font-weight: bold; color: #4a5568; }
         table.dashboard-table td:nth-of-type(2):before { content: "Published: "; font-weight: bold; color: #4a5568; }
         table.dashboard-table td:nth-of-type(3):before { content: "Theme: "; font-weight: bold; color: #4a5568; }
         table.dashboard-table td:nth-of-type(4):before { content: "Tallies: "; font-weight: bold; color: #4a5568; }
-        table.dashboard-table td:nth-of-type(5):before { content: "Share Link: "; font-weight: bold; color: #4a5568; display: block; margin-bottom: 5px; }
+        table.dashboard-table td:nth-of-type(5):before { content: "Share Link & QR: "; font-weight: bold; color: #4a5568; display: block; margin-bottom: 5px; }
         
         .action-cell {
-            flex-direction: row; /* Buttons sit side-by-side cleanly */
+            flex-direction: row;
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
@@ -105,7 +151,7 @@ include '../includes/header.php';
         }
         .action-cell a {
             text-align: center;
-            flex: 1; /* Makes buttons equal size and balanced on mobile screen */
+            flex: 1;
             min-width: 80px;
             font-size: 0.8rem !important;
             padding: 8px 4px !important;
@@ -119,7 +165,12 @@ include '../includes/header.php';
             <h2 style="font-weight: 700; margin-bottom: 5px;">Live Host Tracking Dashboard</h2>
             <p style="color: #64748b; margin: 0;">Welcome back, <?= htmlspecialchars($_SESSION['username']) ?></p>
         </div>
-        <a href="create_event.php" class="btn btn-primary">+ Design New Invitation Model</a>
+        <div class="dashboard-header-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <?php if (($_SESSION['role'] ?? '') === 'superadmin'): ?>
+                <a href="super_admin_dashboard.php" class="btn btn-outline">Main Admin Panel</a>
+            <?php endif; ?>
+            <a href="create_event.php" class="btn btn-primary">+ Design New Invitation Model</a>
+        </div>
     </div>
 
     <?php if (empty($invitations)): ?>
@@ -137,7 +188,7 @@ include '../includes/header.php';
                             <th>Published</th>
                             <th>Theme</th>
                             <th>Tallies</th>
-                            <th>Link</th>
+                            <th>Link & QR</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -158,8 +209,9 @@ include '../includes/header.php';
                             <td style="padding: 12px;"><span class="badge badge-info"><?= (int)$row['total_rsvps'] ?> Records</span></td>
                             <td style="padding: 12px;">
                                 <div class="input-copy-group">
-                                    <input type="text" class="form-control" style="padding: 6px; font-size:0.85rem;" value="<?= $publicUrl ?>" readonly>
-                                    <button class="btn btn-outline" style="padding: 6px 12px; font-size:0.85rem; background-color: #edf2f7;" type="button" id="<?= $btnId ?>" onclick="copyToClipboardMobile('<?= $publicUrl ?>', '<?= $btnId ?>')">Copy</button>
+                                    <input type="text" class="form-control" style="padding: 6px; font-size:0.85rem;" value="<?= htmlspecialchars($publicUrl) ?>" readonly>
+                                    <button class="btn btn-outline copy-btn" style="padding: 6px 12px; font-size:0.85rem; background-color: #edf2f7;" type="button" id="<?= $btnId ?>" onclick="copyToClipboardMobile('<?= htmlspecialchars($publicUrl, ENT_QUOTES) ?>', '<?= $btnId ?>')">Copy</button>
+                                    <button class="btn qr-btn" style="padding: 6px 12px; font-size:0.85rem;" type="button" onclick="openQrModal('<?= htmlspecialchars($publicUrl, ENT_QUOTES) ?>', '<?= htmlspecialchars($row['title'], ENT_QUOTES) ?>')">QR</button>
                                 </div>
                             </td>
                             <td class="action-cell" style="padding: 12px;">
@@ -176,11 +228,71 @@ include '../includes/header.php';
     <?php endif; ?>
 </div>
 
+<!-- QR Code Modal -->
+<div id="qrModal" class="qr-modal-backdrop" onclick="closeQrModal(event)">
+    <div class="qr-modal-box" onclick="event.stopPropagation()">
+        <h3 id="qrModalTitle" style="margin: 0 0 6px; font-size: 1.15rem; color: #1b1b1b;">Event QR Code</h3>
+        <p style="margin: 0; font-size: 0.85rem; color: #343639;">Scan with a phone camera to open the invitation</p>
+        
+        <div id="qrCanvasContainer"></div>
+        
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 8px;">
+            <button type="button" class="btn btn-primary" style="flex: 1;" onclick="downloadCurrentQr()">Download</button>
+            <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeQrModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- QRCode.js Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <script>
+let currentQrTitle = 'invitation';
+
+function openQrModal(url, title) {
+    currentQrTitle = title;
+    document.getElementById('qrModalTitle').textContent = title;
+    
+    const container = document.getElementById('qrCanvasContainer');
+    container.innerHTML = ''; // Clear previous QR
+    
+    new QRCode(container, {
+        text: url,
+        width: 200,
+        height: 200,
+        colorDark: "#0f172a",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+    
+    document.getElementById('qrModal').classList.add('active');
+}
+
+function closeQrModal() {
+    document.getElementById('qrModal').classList.remove('active');
+}
+
+function downloadCurrentQr() {
+    const container = document.getElementById('qrCanvasContainer');
+    const img = container.querySelector('img');
+    const canvas = container.querySelector('canvas');
+    
+    const dataUrl = (img && img.src && img.src.startsWith('data:')) 
+        ? img.src 
+        : canvas.toDataURL('image/png');
+        
+    const safeName = currentQrTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = safeName + '_qr_invite.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
 function copyToClipboardMobile(text, buttonId) {
     const btn = document.getElementById(buttonId);
     
-    // Method 1: Modern asynchronous clipboard API
     if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(() => {
             handleCopySuccess(btn);
@@ -188,7 +300,6 @@ function copyToClipboardMobile(text, buttonId) {
             fallbackCopy(text, btn);
         });
     } else {
-        // Method 2: iOS & Older Mobile Device Fallback Engine
         fallbackCopy(text, btn);
     }
 }
@@ -196,8 +307,6 @@ function copyToClipboardMobile(text, buttonId) {
 function fallbackCopy(text, btn) {
     const textArea = document.createElement("textarea");
     textArea.value = text;
-    
-    // Position out of sight safely without breaking page flows
     textArea.style.position = "fixed";
     textArea.style.top = "0";
     textArea.style.left = "0";
@@ -213,7 +322,6 @@ function fallbackCopy(text, btn) {
     textArea.focus();
     textArea.select();
     
-    // Special selection fix tailored for mobile iOS elements
     if (navigator.userAgent.match(/ipad|ipod|iphone/i)) {
         const range = document.createRange();
         range.selectNodeContents(textArea);
