@@ -87,6 +87,10 @@ include '../includes/header.php';
                         <option value="wedding" <?= $event['theme'] === 'wedding' ? 'selected' : '' ?>>Romantic Floral Style (Weddings)</option>
                         <option value="birthday" <?= $event['theme'] === 'birthday' ? 'selected' : '' ?>>Vibrant Festive Style (Birthdays)</option>
                         <option value="corporate" <?= $event['theme'] === 'corporate' ? 'selected' : '' ?>>Modern Minimalist Style (Corporate)</option>
+                        <option value="tech_cyber" <?= $event['theme'] === 'tech_cyber' ? 'selected' : '' ?>>Futuristic Tech &amp; Cyber Grid (Tech / Hackathons)</option>
+                        <option value="vintage_parchment" <?= $event['theme'] === 'vintage_parchment' ? 'selected' : '' ?>>Vintage Letterpress &amp; Gold Foil (Classic / Heritage)</option>
+                        <option value="modern_editorial" <?= $event['theme'] === 'modern_editorial' ? 'selected' : '' ?>>Modern Editorial Luxe (Galas / Launches)</option>
+                        <option value="retro_synth" <?= $event['theme'] === 'retro_synth' ? 'selected' : '' ?>>Retro Neon &amp; Dark Glass (Nightlife / Gaming)</option>
                     </select>
                 </div>
             </div>

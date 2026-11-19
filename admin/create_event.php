@@ -25,6 +25,10 @@ include '../includes/header.php';
                         <option value="wedding">Romantic Floral Style (Weddings)</option>
                         <option value="birthday">Vibrant Festive Style (Birthdays)</option>
                         <option value="corporate">Modern Minimalist Style (Corporate)</option>
+                        <option value="tech_cyber">Futuristic Tech &amp; Cyber Grid (Tech / Hackathons)</option>
+                        <option value="vintage_parchment">Vintage Letterpress &amp; Gold Foil (Classic / Heritage)</option>
+                        <option value="modern_editorial">Modern Editorial Luxe (Galas / Launches)</option>
+                        <option value="retro_synth">Retro Neon &amp; Dark Glass (Nightlife / Gaming)</option>
                     </select>
                 </div>
             </div>

@@ -166,7 +166,6 @@ body {
     box-shadow: 0 30px 70px rgba(176, 92, 109, 0.08);
     position: relative;
 }
-/* Double decorative fine border overlay line */
 .theme-wedding .card::after {
     content: ''; position: absolute; top: 15px; left: 15px; right: 15px; bottom: 15px;
     border: 1px solid rgba(212, 175, 55, 0.25); pointer-events: none; border-radius: 12px;
@@ -198,7 +197,6 @@ body {
     color: #f1f1f1;
 }
 .theme-birthday .card {
-    background: rgba(25ed, 255, 255, 0.03);
     background: rgba(30, 25, 55, 0.75);
     backdrop-filter: blur(25px);
     border: 1px solid rgba(255, 255, 255, 0.07);
@@ -237,7 +235,7 @@ body {
 .theme-corporate .card {
     background: #ffffff;
     border: 1px solid #eaeaea;
-    border-radius: 0px; /* Sharp editorial angles */
+    border-radius: 0px;
     box-shadow: var(--shadow-premium);
 }
 .theme-corporate h1 {
@@ -264,12 +262,328 @@ body {
 .theme-corporate #status_attending:checked + .rsvp-check-label { border-color: #111; background: #111; color: #fff; }
 .theme-corporate #status_declined:checked + .rsvp-check-label { border-color: #111; background: #f0f0f0; color: #111; }
 
+/* --------------------------------------------------------------------------
+   THEME 4: FUTURISTIC TECH & CYBER GRID (Tech / Hackathons / AI Summits)
+   -------------------------------------------------------------------------- */
+.theme-tech_cyber {
+    background-color: #04070d;
+    background-image:
+        linear-gradient(rgba(6, 182, 212, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(6, 182, 212, 0.07) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color: #e2e8f0;
+}
+.theme-tech_cyber .card {
+    background: rgba(10, 16, 29, 0.88);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(34, 211, 238, 0.35);
+    border-radius: 8px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(6, 182, 212, 0.15);
+    position: relative;
+}
+.theme-tech_cyber .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, #22d3ee, #3b82f6, transparent);
+}
+.theme-tech_cyber h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 2.3rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #22d3ee;
+    text-shadow: 0 0 18px rgba(34, 211, 238, 0.35);
+}
+.theme-tech_cyber h5 {
+    font-family: 'Courier New', monospace;
+    color: #38bdf8;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+.theme-tech_cyber p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: #cbd5e1;
+}
+.theme-tech_cyber .form-control {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 6px;
+    color: #f8fafc;
+}
+.theme-tech_cyber .form-control:focus {
+    border-color: #22d3ee;
+    background: rgba(15, 23, 42, 1);
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
+}
+.theme-tech_cyber .btn-theme {
+    background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
+    color: #ffffff;
+    border-radius: 6px;
+    letter-spacing: 2px;
+    box-shadow: 0 8px 25px rgba(6, 182, 212, 0.35);
+}
+.theme-tech_cyber .btn-theme:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(34, 211, 238, 0.5);
+}
+.theme-tech_cyber .rsvp-check-label {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 6px;
+    color: #94a3b8;
+}
+.theme-tech_cyber #status_attending:checked + .rsvp-check-label {
+    border-color: #22d3ee;
+    background: rgba(34, 211, 238, 0.14);
+    color: #22d3ee;
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
+}
+.theme-tech_cyber #status_declined:checked + .rsvp-check-label {
+    border-color: #64748b;
+    background: rgba(100, 116, 139, 0.18);
+    color: #e2e8f0;
+}
+
+/* --------------------------------------------------------------------------
+   THEME 5: VINTAGE LETTERPRESS & GOLD FOIL (Classic / Heritage)
+   -------------------------------------------------------------------------- */
+.theme-vintage_parchment {
+    background: radial-gradient(circle at center, #fbf7ee 0%, #efe6d5 100%);
+    color: #3b2f23;
+}
+.theme-vintage_parchment .card {
+    background: #fcf9f2;
+    border: 2px solid #c5a467;
+    border-radius: 4px;
+    box-shadow: 0 25px 60px rgba(59, 47, 35, 0.12);
+    position: relative;
+}
+.theme-vintage_parchment .card::after {
+    content: '';
+    position: absolute;
+    top: 12px; left: 12px; right: 12px; bottom: 12px;
+    border: 1px solid rgba(197, 164, 103, 0.55);
+    pointer-events: none;
+}
+.theme-vintage_parchment h1 {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: 3px;
+    color: #6e5225;
+    line-height: 1.25;
+}
+.theme-vintage_parchment h5 {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 600;
+    color: #9c7a3c;
+    letter-spacing: 1.5px;
+}
+.theme-vintage_parchment p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: #4a3b2c;
+}
+.theme-vintage_parchment .form-control {
+    background: #fffdf9;
+    border: 1px solid #d6c5a3;
+    border-radius: 4px;
+    color: #3b2f23;
+}
+.theme-vintage_parchment .form-control:focus {
+    border-color: #8c6a2b;
+    background: #ffffff;
+}
+.theme-vintage_parchment .btn-theme {
+    background: linear-gradient(135deg, #9c7a3c 0%, #6e5225 100%);
+    color: #fcf9f2;
+    border-radius: 4px;
+    letter-spacing: 2px;
+    box-shadow: 0 10px 25px rgba(110, 82, 37, 0.25);
+}
+.theme-vintage_parchment .btn-theme:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(110, 82, 37, 0.35);
+}
+.theme-vintage_parchment .rsvp-check-label {
+    background: #fffdf9;
+    border: 1px solid #d6c5a3;
+    border-radius: 4px;
+    color: #5c4936;
+}
+.theme-vintage_parchment #status_attending:checked + .rsvp-check-label {
+    border-color: #8c6a2b;
+    background: #f5ebd6;
+    color: #5c4114;
+}
+.theme-vintage_parchment #status_declined:checked + .rsvp-check-label {
+    border-color: #a89f91;
+    background: #f0ece4;
+    color: #6e6559;
+}
+
+/* --------------------------------------------------------------------------
+   THEME 6: MODERN EDITORIAL LUXE (Galas / Fashion / Launches)
+   -------------------------------------------------------------------------- */
+.theme-modern_editorial {
+    background: linear-gradient(180deg, #f4f1ea 0%, #e8e2d5 100%);
+    color: #18181b;
+}
+.theme-modern_editorial .card {
+    background: #ffffff;
+    border: 1px solid #18181b;
+    border-radius: 2px;
+    box-shadow: 12px 12px 0px rgba(24, 24, 27, 0.08);
+}
+.theme-modern_editorial h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 2.8rem;
+    letter-spacing: -0.5px;
+    color: #18181b;
+    line-height: 1.15;
+}
+.theme-modern_editorial h5 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: #71717a;
+}
+.theme-modern_editorial p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.22rem;
+    color: #27272a;
+}
+.theme-modern_editorial .form-control {
+    background: #fafafa;
+    border: 1px solid #27272a;
+    border-radius: 2px;
+    color: #18181b;
+}
+.theme-modern_editorial .form-control:focus {
+    border-color: #000000;
+    background: #ffffff;
+}
+.theme-modern_editorial .btn-theme {
+    background: #18181b;
+    color: #ffffff;
+    border-radius: 2px;
+    letter-spacing: 2.5px;
+}
+.theme-modern_editorial .btn-theme:hover {
+    background: #3f3f46;
+    transform: translateY(-2px);
+}
+.theme-modern_editorial .rsvp-check-label {
+    border: 1px solid #27272a;
+    border-radius: 2px;
+    background: #ffffff;
+    color: #18181b;
+}
+.theme-modern_editorial #status_attending:checked + .rsvp-check-label {
+    background: #18181b;
+    color: #ffffff;
+}
+.theme-modern_editorial #status_declined:checked + .rsvp-check-label {
+    background: #e4e4e7;
+    color: #18181b;
+}
+
+/* --------------------------------------------------------------------------
+   THEME 7: RETRO NEON & DARK GLASS (Nightlife / Gaming / Afterparties)
+   -------------------------------------------------------------------------- */
+.theme-retro_synth {
+    background: radial-gradient(circle at top right, #2e1065 0%, #140826 55%, #090312 100%);
+    color: #f8fafc;
+}
+.theme-retro_synth .card {
+    background: rgba(24, 12, 46, 0.78);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(244, 63, 94, 0.4);
+    border-radius: 16px;
+    box-shadow: 0 35px 75px rgba(0, 0, 0, 0.65), 0 0 35px rgba(244, 63, 94, 0.2);
+}
+.theme-retro_synth h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 2.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, #fb7185 0%, #f59e0b 50%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.theme-retro_synth h5 {
+    font-family: 'Montserrat', sans-serif;
+    color: #fbbf24;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+}
+.theme-retro_synth p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.12rem;
+    font-weight: 300;
+    color: #e9d5ff;
+}
+.theme-retro_synth .form-control {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(192, 132, 252, 0.3);
+    border-radius: 10px;
+    color: #ffffff;
+}
+.theme-retro_synth .form-control:focus {
+    border-color: #fb7185;
+    background: rgba(255, 255, 255, 0.1);
+}
+.theme-retro_synth .btn-theme {
+    background: linear-gradient(90deg, #f43f5e 0%, #d946ef 100%);
+    color: #ffffff;
+    box-shadow: 0 0 25px rgba(244, 63, 94, 0.45);
+}
+.theme-retro_synth .btn-theme:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 0 35px rgba(217, 70, 239, 0.6);
+}
+.theme-retro_synth .rsvp-check-label {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(192, 132, 252, 0.25);
+    color: #e9d5ff;
+}
+.theme-retro_synth #status_attending:checked + .rsvp-check-label {
+    border-color: #fb7185;
+    background: rgba(244, 63, 94, 0.18);
+    color: #fda4af;
+    box-shadow: 0 0 18px rgba(244, 63, 94, 0.25);
+}
+.theme-retro_synth #status_declined:checked + .rsvp-check-label {
+    border-color: #c084fc;
+    background: rgba(192, 132, 252, 0.15);
+    color: #d8b4fe;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .grid-2col { grid-template-columns: 1fr; gap: 20px; }
     .nav-container { flex-direction: column; gap: 20px; }
     .theme-wedding h1 { font-size: 3rem; }
     .theme-birthday h1 { font-size: 2.2rem; }
+    .theme-tech_cyber h1 { font-size: 1.85rem; }
+    .theme-vintage_parchment h1 { font-size: 2rem; }
+    .theme-modern_editorial h1 { font-size: 2.15rem; }
+    .theme-retro_synth h1 { font-size: 2rem; }
+    .rsvp-selection-grid { grid-template-columns: 1fr; gap: 12px; }
+    .card-body { padding: 26px 20px; }
     .public-view-container { margin: 20px auto; }
 }
 /* ==========================================================================
@@ -420,7 +734,7 @@ body {
     color: #07090e !important;
     font-weight: 700 !important;
     box-shadow: 0 20px 40px rgba(255, 255, 255, 0.05) !important;
-    border-radius: 4px !important; /* Elegant architectural styling */
+    border-radius: 4px !important;
     padding: 18px 45px !important;
 }
 .dark-premium-cta:hover {

@@ -88,12 +88,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_rsvp'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($event['title']) ?></title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel&family=Great+Vibes&family=Montserrat:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&family=Montserrat:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css?v=2">
     
     <style>
         /* Essential structure bypass fixes (No styling alterations) */
-        .theme-wedding .card::after {
+        .theme-wedding .card::after,
+        .theme-vintage_parchment .card::after,
+        .theme-tech_cyber .card::before {
             pointer-events: none !important;
         }
         .rsvp-check-label {
@@ -118,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_rsvp'])) {
 
         /* Global fluid responsive typography and structural center alignment */
         .theme-card-layout h1 {
-            font-size: clamp(1.6rem, 5vw, 2.5rem) !important;
+            font-size: clamp(1.75rem, 5vw, 3.2rem) !important;
             word-wrap: break-word !important;
             overflow-wrap: break-word !important;
             white-space: normal !important;
@@ -175,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_rsvp'])) {
 
         .public-view-container {
             width: 100% !important;
-            max-width: 600px !important; /* Aligns with standard invitation wrapper limits */
+            max-width: 600px !important;
             margin: 0 auto !important;
             padding: 12px !important;
             float: none !important;
